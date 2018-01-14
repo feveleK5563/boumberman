@@ -95,11 +95,15 @@
     <ClCompile Include="DG2014\DG2014_VertexContainer.cpp" />
     <ClCompile Include="DI2014_Ver3_4.cpp" />
     <ClCompile Include="GameEngine_Ver3_7.cpp" />
+    <ClCompile Include="ImageManager.cpp" />
     <ClCompile Include="myLib.cpp" />
     <ClCompile Include="MyPG.cpp" />
+    <ClCompile Include="Task_Block.cpp" />
+    <ClCompile Include="Task_Bomb.cpp" />
     <ClCompile Include="Task_Game.cpp" />
     <ClCompile Include="Task_GameBG.cpp" />
     <ClCompile Include="Task_Player.cpp" />
+    <ClCompile Include="Task_Stage.cpp" />
     <ClCompile Include="Task_Title.cpp" />
     <ClCompile Include="WinMain.cpp" />
     <ClCompile Include="xnacollision.cpp" />
@@ -120,11 +124,15 @@
     <ClInclude Include="DI2014_Ver3_4.h" />
     <ClInclude Include="EFile.h" />
     <ClInclude Include="GameEngine_Ver3_7.h" />
+    <ClInclude Include="ImageManager.h" />
     <ClInclude Include="myLib.h" />
     <ClInclude Include="MyPG.h" />
+    <ClInclude Include="Task_Block.h" />
+    <ClInclude Include="Task_Bomb.h" />
     <ClInclude Include="Task_Game.h" />
     <ClInclude Include="Task_GameBG.h" />
     <ClInclude Include="Task_Player.h" />
+    <ClInclude Include="Task_Stage.h" />
     <ClInclude Include="Task_Title.h" />
     <ClInclude Include="xnacollision.h" />
   </ItemGroup>

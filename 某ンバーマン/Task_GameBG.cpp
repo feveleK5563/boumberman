@@ -12,7 +12,7 @@ namespace  GameBG
 	bool  Resource::Initialize()
 	{
 		imageName = "GameBG";
-		DG::Image_Create(imageName, "./data/image/GameBG.bmp");
+		DG::Image_Create(imageName, "./data/image/Back.png");
 		return true;
 	}
 	//-------------------------------------------------------------------
@@ -60,8 +60,8 @@ namespace  GameBG
 	//u‚Q‚c•`‰æv‚PƒtƒŒ[ƒ€–ˆ‚És‚¤ˆ—
 	void  Object::Render2D_AF()
 	{
-		ML::Box2D draw(0, 0, 480, 270);
-		ML::Box2D src(0, 0, 480, 270);
+		ML::Box2D draw(0, 0, int(ge->screen2DWidth), int(ge->screen2DHeight));
+		ML::Box2D src(0, 0, 32, 32);
 		DG::Image_Draw(res->imageName, draw, src);
 	}
 

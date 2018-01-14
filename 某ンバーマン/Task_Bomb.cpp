@@ -2,18 +2,17 @@
 //
 //-------------------------------------------------------------------
 #include  "MyPG.h"
-#include  "Task_Player.h"
-#include  "Task_Stage.h"
+#include  "Task_Bomb.h"
 
-namespace  Player
+namespace  Bomb
 {
 	Resource::WP  Resource::instance;
 	//-------------------------------------------------------------------
 	//リソースの初期化
 	bool  Resource::Initialize()
 	{
-		imageName = "Player";
-		DG::Image_Create(imageName, "./data/image/Player.png");
+		imageName = "Bomb";
+		DG::Image_Create(imageName, "./data/image/Bomb.png");
 		return true;
 	}
 	//-------------------------------------------------------------------
@@ -33,16 +32,14 @@ namespace  Player
 		this->res = Resource::Create();
 
 		//★データ初期化
-		render2D_Priority[1] = 0.3f;
+		render2D_Priority[1] = 0.5f;
 
-		image.ImageCreate32x32(0, 0, 3, 3);
-		image.ImageCreate32x32(0, 3, 6, 1);
-
-		pos = { 48.f, 48.f };
-		hitBase = { -12, -14, 24, 28 };
-		image.baseImageNum = 6;
-		angleLRUD = Right;
+		bombMapPos = { 0, 0 };
+		state = State1;
 		
+		image.ImageCreate32x32(0, 0, 3, 1);
+		image.ImageCreate32x32(0, 1, 7, 4);
+
 		//★タスクの生成
 
 		return  true;
@@ -64,9 +61,15 @@ namespace  Player
 	//「更新」１フレーム毎に行う処理
 	void  Object::UpDate()
 	{
-		MovePlayer();
-		CheckHitMove();
-		Animation();
+		switch (state)
+		{
+		case State1:
+			NoBomb();
+			break;
+
+		case Death:
+			break;
+		}
 	}
 	//-------------------------------------------------------------------
 	//「２Ｄ描画」１フレーム毎に行う処理
@@ -76,78 +79,17 @@ namespace  Player
 	}
 
 	//-------------------------------------------------------------------
-	//ボタン入力に応じて行う処理
-	void Object::MovePlayer()
+	//未爆発時の更新
+	void Object::NoBomb()
 	{
-		auto in = DI::GPad_GetState("P1");
-
-		//動作
-		if (in.LStick.L.down) { speed.x = -1; speed.y = 0; }
-		if (in.LStick.R.down) { speed.x =  1; speed.y = 0; }
-		if (in.LStick.L.up || in.LStick.R.up)
+		if (cntTime >= 135)
 		{
-			speed.x = 0;
-			if (in.LStick.U.on) { speed.y = -1; }
-			if (in.LStick.D.on) { speed.y =  1; }
+			Kill();
 		}
-
-		if (in.LStick.U.down) { speed.y = -1; speed.x = 0; }
-		if (in.LStick.D.down) { speed.y =  1; speed.x = 0; }
-		if (in.LStick.U.up || in.LStick.D.up)
+		else
 		{
-			speed.y = 0;
-			if (in.LStick.L.on) { speed.x = -1; }
-			if (in.LStick.R.on) { speed.x =  1; }
-		}
-
-		if (speed.x < 0) { angleLRUD = Left; }
-		if (speed.x > 0) { angleLRUD = Right; }
-		if (speed.y < 0) { angleLRUD = Up; }
-		if (speed.y > 0) { angleLRUD = Down; }
-
-
-		//爆弾出現
-		if (in.B1.down)
-		{
-			if (auto stage = ge->GetTask_One_GN<Stage::Object>("ステージ", "統括"))
-			{
-				stage->SetBomb(pos);
-			}
-		}
-	}
-
-	//-------------------------------------------------------------------
-	//アニメーション
-	void Object::Animation()
-	{
-		switch (angleLRUD)
-		{
-		case Left:
-			image.baseImageNum = 3;
-			image.animTurn = true;
-			break;
-
-		case Right:
-			image.baseImageNum = 3;
-			image.animTurn = false;
-			break;
-
-		case Up:
-			image.baseImageNum = 0;
-			image.animTurn = false;
-			break;
-
-		case Down:
-			image.baseImageNum = 6;
-			image.animTurn = false;
-			break;
-		}
-
-		if (fabsf(speed.x) > 0.f ||
-			fabsf(speed.y) > 0.f)
-		{
+			image.animCnt = float(noBombTable[(cntTime / 15) % 4]);
 			++cntTime;
-			image.animCnt = float(animTable[(cntTime / 5) % 4]);
 		}
 	}
 

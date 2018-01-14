@@ -2,25 +2,23 @@
 //
 //-------------------------------------------------------------------
 #include  "MyPG.h"
-#include  "Task_Player.h"
 #include  "Task_Stage.h"
+#include  "Task_Block.h"
+#include  "Task_Bomb.h"
 
-namespace  Player
+namespace  Stage
 {
 	Resource::WP  Resource::instance;
 	//-------------------------------------------------------------------
 	//リソースの初期化
 	bool  Resource::Initialize()
 	{
-		imageName = "Player";
-		DG::Image_Create(imageName, "./data/image/Player.png");
 		return true;
 	}
 	//-------------------------------------------------------------------
 	//リソースの解放
 	bool  Resource::Finalize()
 	{
-		DG::Image_Erase(imageName);
 		return true;
 	}
 	//-------------------------------------------------------------------
@@ -33,16 +31,9 @@ namespace  Player
 		this->res = Resource::Create();
 
 		//★データ初期化
-		render2D_Priority[1] = 0.3f;
+		render2D_Priority[1] = 0.8f;
+		StageSet();
 
-		image.ImageCreate32x32(0, 0, 3, 3);
-		image.ImageCreate32x32(0, 3, 6, 1);
-
-		pos = { 48.f, 48.f };
-		hitBase = { -12, -14, 24, 28 };
-		image.baseImageNum = 6;
-		angleLRUD = Right;
-		
 		//★タスクの生成
 
 		return  true;
@@ -52,7 +43,7 @@ namespace  Player
 	bool  Object::Finalize()
 	{
 		//★データ＆タスク解放
-		image.ImageErase();
+
 
 		if (!ge->QuitFlag() && this->nextTaskCreate) {
 			//★引き継ぎタスクの生成
@@ -64,91 +55,93 @@ namespace  Player
 	//「更新」１フレーム毎に行う処理
 	void  Object::UpDate()
 	{
-		MovePlayer();
-		CheckHitMove();
-		Animation();
 	}
 	//-------------------------------------------------------------------
 	//「２Ｄ描画」１フレーム毎に行う処理
 	void  Object::Render2D_AF()
 	{
-		image.ImageCenterRender(pos, res->imageName);
 	}
 
 	//-------------------------------------------------------------------
-	//ボタン入力に応じて行う処理
-	void Object::MovePlayer()
+	//ステージの設定
+	void Object::StageSet()
 	{
-		auto in = DI::GPad_GetState("P1");
+		//マップデータ読み込み(仮)
+		int mpd[MapHeight][MapWidth] = {
+		{ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+		{ 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0 },
+		{ 0, -1,  0, -1,  0, -1,  0, -1,  0, -1,  0, -1,  0, -1,  0 },
+		{ 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0 },
+		{ 0, -1,  0, -1,  0, -1,  0, -1,  0, -1,  0, -1,  0, -1,  0 },
+		{ 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0 },
+		{ 0, -1,  0, -1,  0, -1,  0, -1,  0, -1,  0, -1,  0, -1,  0 },
+		{ 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0 },
+		{ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+		};
 
-		//動作
-		if (in.LStick.L.down) { speed.x = -1; speed.y = 0; }
-		if (in.LStick.R.down) { speed.x =  1; speed.y = 0; }
-		if (in.LStick.L.up || in.LStick.R.up)
+		//上記のマップデータを元にブロックを作成
+		for (int y = 0; y < MapHeight; ++y)
 		{
-			speed.x = 0;
-			if (in.LStick.U.on) { speed.y = -1; }
-			if (in.LStick.D.on) { speed.y =  1; }
-		}
-
-		if (in.LStick.U.down) { speed.y = -1; speed.x = 0; }
-		if (in.LStick.D.down) { speed.y =  1; speed.x = 0; }
-		if (in.LStick.U.up || in.LStick.D.up)
-		{
-			speed.y = 0;
-			if (in.LStick.L.on) { speed.x = -1; }
-			if (in.LStick.R.on) { speed.x =  1; }
-		}
-
-		if (speed.x < 0) { angleLRUD = Left; }
-		if (speed.x > 0) { angleLRUD = Right; }
-		if (speed.y < 0) { angleLRUD = Up; }
-		if (speed.y > 0) { angleLRUD = Down; }
-
-
-		//爆弾出現
-		if (in.B1.down)
-		{
-			if (auto stage = ge->GetTask_One_GN<Stage::Object>("ステージ", "統括"))
+			for (int x = 0; x < MapWidth; ++x)
 			{
-				stage->SetBomb(pos);
+				mapData[y][x] = mpd[y][x];
+				auto block = Block::Object::Create(true);
+				block->pos = ML::Vec2(float(x * 32), float(y * 32));
+				block->blockNum = mapData[y][x];
+				block->image.baseImageNum = block->blockNum;
 			}
 		}
 	}
 
 	//-------------------------------------------------------------------
-	//アニメーション
-	void Object::Animation()
+	//爆弾を設置
+	void Object::SetBomb(const ML::Vec2& plyPos)
 	{
-		switch (angleLRUD)
+		POINT bmp = {
+			int(plyPos.x / 32),
+			int(plyPos.y / 32)
+		};
+
+		if (mapData[bmp.y][bmp.x] == -1)
 		{
-		case Left:
-			image.baseImageNum = 3;
-			image.animTurn = true;
-			break;
+			mapData[bmp.y][bmp.x] = -2;
+			auto bm = Bomb::Object::Create(true);
+			bm->bombMapPos = bmp;
+			bm->pos = { float(bmp.x * 32 + 16), float(bmp.y * 32 + 16) };
+		}
+	}
 
-		case Right:
-			image.baseImageNum = 3;
-			image.animTurn = false;
-			break;
+	//-------------------------------------------------------------------
+	//マップとの当たり判定
+	bool Object::MapHitCheck(const ML::Box2D& hitBase)
+	{
+		RECT hb = { hitBase.x, hitBase.y,
+					hitBase.x + hitBase.w, hitBase.y + hitBase.h };
 
-		case Up:
-			image.baseImageNum = 0;
-			image.animTurn = false;
-			break;
+		//矩形がマップ外に出ていたら丸め込みを行う
+		RECT mb = { 0, 0, 32 * MapWidth, 32 * MapHeight };
+		if (hb.left < mb.left) { hb.left = mb.left; }
+		if (hb.top < mb.top) { hb.top = mb.top; }
+		if (hb.right > mb.right) { hb.right = mb.right; }
 
-		case Down:
-			image.baseImageNum = 6;
-			image.animTurn = false;
-			break;
+		//ループ範囲調整
+		int sx, sy, ex, ey;
+		sx = hb.left / 32;
+		sy = hb.top / 32;
+		ex = (hb.right - 1) / 32;
+		ey = (hb.bottom - 1) / 32;
+
+		//範囲内の障害物を探す
+		for (int y = sy; y <= ey; ++y)
+		{
+			for (int x = sx; x <= ex; ++x)
+			{
+				if (mapData[y][x] == 0)
+					return true;
+			}
 		}
 
-		if (fabsf(speed.x) > 0.f ||
-			fabsf(speed.y) > 0.f)
-		{
-			++cntTime;
-			image.animCnt = float(animTable[(cntTime / 5) % 4]);
-		}
+		return false;
 	}
 
 	//★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★

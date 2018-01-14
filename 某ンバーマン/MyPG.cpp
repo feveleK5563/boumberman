@@ -10,7 +10,7 @@ namespace MyPG
 	:GameEngine(
 	//	環境情報
 		480,							//	画面サイズX
-		270,							//	画面サイズY
+		288,							//	画面サイズY
 		2,								//	表示倍率
 		1,								//	マルチサンプル(1or2or4)
 		false,							//	フルスクリーンモード
@@ -82,7 +82,7 @@ namespace MyPG
 
 
 		//背景色の設定（デフォルト）
-		DG::EffectState( ).param.bgColor  =  ML::Color(0,0.0f,0.8f,0.0f);
+		DG::EffectState().param.bgColor = ML::Color(0, 0, 0, 0);
 
 		//初期実行タスク生成＆ゲームエンジンに登録
 		auto firstTask = Title::Object::Create(true);

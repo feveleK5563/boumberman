@@ -3,13 +3,13 @@
 //-------------------------------------------------------------------
 //
 //-------------------------------------------------------------------
-#include "BChara.h"
+#include "GameEngine_Ver3_7.h"
 
-namespace  Player
+namespace  Stage
 {
 	//タスクに割り当てるグループ名と固有名
-	const  string  defGroupName("本編");	//グループ名
-	const  string  defName("プレイヤー");		//タスク名
+	const  string  defGroupName("ステージ");	//グループ名
+	const  string  defName("統括");	//タスク名
 	//-------------------------------------------------------------------
 	class  Resource
 	{
@@ -22,13 +22,12 @@ namespace  Player
 		typedef  weak_ptr<Resource>		WP;
 		static   WP  instance;
 		static  Resource::SP  Create();
-	//変更可◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇
 		//共有する変数はここに追加する
-		string imageName;
 	};
 	//-------------------------------------------------------------------
-	class  Object : public  BChara
+	class  Object : public  BTask
 	{
+	//変更不可◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆
 	public:
 		virtual  ~Object();
 		typedef  shared_ptr<Object>		SP;
@@ -37,7 +36,6 @@ namespace  Player
 		static  Object::SP  Create(bool flagGameEnginePushBack_);
 		Resource::SP	res;
 	private:
-
 		Object();
 		bool  B_Initialize();
 		bool  B_Finalize();
@@ -45,13 +43,15 @@ namespace  Player
 		void  UpDate();		//「実行」１フレーム毎に行う処理
 		void  Render2D_AF();	//「2D描画」１フレーム毎に行う処理
 		bool  Finalize();		//「終了」タスク消滅時に１回だけ行う処理
-	public:
 	//変更可◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇
+	public:
 		//追加したい変数・メソッドはここに追加する
-		//BCharaに含まれないモノのみここに追加する
-		const int animTable[4] = { 0, 1, 0, 2 };
+		static const int MapWidth = 15;
+		static const int MapHeight = 9;
+		int mapData[MapHeight][MapWidth];
 
-		void MovePlayer();
-		void Animation();
+		void StageSet();
+		void SetBomb(const ML::Vec2&);
+		bool MapHitCheck(const ML::Box2D&);
 	};
 }

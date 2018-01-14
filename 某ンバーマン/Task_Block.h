@@ -5,11 +5,11 @@
 //-------------------------------------------------------------------
 #include "BChara.h"
 
-namespace  Player
+namespace  Block
 {
 	//タスクに割り当てるグループ名と固有名
-	const  string  defGroupName("本編");	//グループ名
-	const  string  defName("プレイヤー");		//タスク名
+	const  string  defGroupName("ステージ");	//グループ名
+	const  string  defName("ブロック");		//タスク名
 	//-------------------------------------------------------------------
 	class  Resource
 	{
@@ -49,9 +49,6 @@ namespace  Player
 	//変更可◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇
 		//追加したい変数・メソッドはここに追加する
 		//BCharaに含まれないモノのみここに追加する
-		const int animTable[4] = { 0, 1, 0, 2 };
-
-		void MovePlayer();
-		void Animation();
+		int blockNum;
 	};
 }

@@ -7,6 +7,7 @@
 
 #include  "Task_GameBG.h"
 #include  "Task_Player.h"
+#include  "Task_Stage.h"
 
 namespace  Game
 {
@@ -37,6 +38,8 @@ namespace  Game
 		auto bg = GameBG::Object::Create(true);
 		//プレイヤータスク
 		auto pl = Player::Object::Create(true);
+		//ステージタスク
+		auto sg = Stage::Object::Create(true);
 		
 		//★タスクの生成
 
@@ -48,6 +51,7 @@ namespace  Game
 	{
 		//★データ＆タスク解放
 		ge->KillAll_G("本編");
+		ge->KillAll_G("ステージ");
 
 		if (!ge->QuitFlag() && this->nextTaskCreate) {
 			//★引き継ぎタスクの生成

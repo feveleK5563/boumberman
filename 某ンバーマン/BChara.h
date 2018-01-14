@@ -4,6 +4,7 @@
 //キャラクタ汎用クラス
 //-------------------------------------------------------------------
 #include "GameEngine_Ver3_7.h"
+#include "ImageManager.h"
 
 class BChara : public BTask
 {
@@ -31,15 +32,12 @@ public:
 	ML::Vec2	speed;		//キャラクターのスピード
 	ML::Box2D	hitBase;	//当たり判定範囲
 
-	//アニメーション
-	vector<ML::Box2D*>	charaChip;	//キャラクタの素材
-	float				animCnt;	//アニメーションカウンタ
-
 	//左右上下の向き
 	enum AngleLRUD { Left, Right, Up, Down };
 	AngleLRUD angleLRUD;
 
 	//その他
+	ImageManager image;
 	int	 cntTime;	//汎用タイマー
 
 	//メンバ変数の初期化
@@ -47,8 +45,8 @@ public:
 		pos(0, 0),
 		speed(0, 0),
 		hitBase(0, 0, 0, 0),
-		animCnt(0),
 		angleLRUD(Left),
+		image(ImageManager::ImageManager()),
 		cntTime(0){}
 
 	virtual ~BChara(){}
@@ -57,4 +55,5 @@ public:
 	//以下キャラクタ共通メソッド
 
 	void NomalMove();
+	void CheckHitMove();
 };

@@ -13,7 +13,7 @@ namespace  Title
 	bool  Resource::Initialize()
 	{
 		imageName = "TitleImg";
-		DG::Image_Create(imageName, "./data/image/Title.bmp");
+		DG::Image_Create(imageName, "./data/image/Title.png");
 		return true;
 	}
 	//-------------------------------------------------------------------
@@ -66,8 +66,9 @@ namespace  Title
 	//u‚Q‚c•`‰æv‚PƒtƒŒ[ƒ€–ˆ‚És‚¤ˆ—
 	void  Object::Render2D_AF()
 	{
-		ML::Box2D draw(0, 0, 480, 270);
-		ML::Box2D src(0, 0, 240, 135);
+		ML::Box2D draw(-227, -139, 454, 278);
+		draw.Offset(float(ge->screen2DWidth) / 2.f, float(ge->screen2DHeight) / 2.f);
+		ML::Box2D src(0, 0, 454, 278);
 		DG::Image_Draw(res->imageName, draw, src);
 	}
 

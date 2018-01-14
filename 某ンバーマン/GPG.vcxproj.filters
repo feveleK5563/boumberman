@@ -118,6 +118,18 @@
     <ClCompile Include="BChara.cpp">
       <Filter>MyPG\Tasks\Game</Filter>
     </ClCompile>
+    <ClCompile Include="ImageManager.cpp">
+      <Filter>MyPG\Tasks\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Task_Stage.cpp">
+      <Filter>MyPG\Tasks\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Task_Block.cpp">
+      <Filter>MyPG\Tasks\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Task_Bomb.cpp">
+      <Filter>MyPG\Tasks\Game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="myLib.h">
@@ -184,6 +196,18 @@
       <Filter>MyPG\Tasks\Game</Filter>
     </ClInclude>
     <ClInclude Include="BChara.h">
+      <Filter>MyPG\Tasks\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageManager.h">
+      <Filter>MyPG\Tasks\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Task_Stage.h">
+      <Filter>MyPG\Tasks\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Task_Block.h">
+      <Filter>MyPG\Tasks\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Task_Bomb.h">
       <Filter>MyPG\Tasks\Game</Filter>
     </ClInclude>
   </ItemGroup>
