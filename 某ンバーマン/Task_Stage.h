@@ -46,6 +46,15 @@ namespace  Stage
 	//変更可◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇
 	public:
 		//追加したい変数・メソッドはここに追加する
+		enum BlockName {
+			CausingEx = -4,
+			Explosion = -3,
+			Bomb = -2,
+			Space = -1,
+			NoBreakBlock = 0,
+			BreakBlock = 1,
+		};
+
 		static const int MapWidth = 15;
 		static const int MapHeight = 9;
 		int mapData[MapHeight][MapWidth];

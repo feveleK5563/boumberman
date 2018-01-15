@@ -53,6 +53,7 @@ namespace  Player
 		int MaxBombNum;
 		int bombNum;
 		int bombPower;
+		float setSpeed;
 
 		void MovePlayer();
 		void Animation();

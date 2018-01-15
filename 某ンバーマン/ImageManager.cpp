@@ -26,39 +26,19 @@ void ImageManager::ImageErase()
 }
 
 //-------------------------------------------------------------------
-//画像の描画(基準座標左上)
+//画像の描画
 //引数：表示座標(ML::Vec2), 画像名(string), 表示色(ML::Color デフォルトで(1, 1, 1, 1))
 void ImageManager::ImageRender(const ML::Vec2& pos, const string& imageName, const ML::Color& color)
 {
 	if (baseImageNum < 0)
 		return;
-
-	ML::Box2D draw(0, 0, 32, 32);
-	draw.Offset(pos);
+	ML::Box2D cdr = draw;
+	cdr.Offset(pos);
 	ML::Box2D src = *charaChip[baseImageNum + int(animCnt)];
 	if (animTurn)
 	{
 		src.x += src.w;
 		src.w *= -1;
 	}
-	DG::Image_Draw(imageName, draw, src, color);
-}
-
-//-------------------------------------------------------------------
-//画像の描画(基準座標中心)
-//引数：表示座標(ML::Vec2), 画像名(string), 表示色(ML::Color デフォルトで(1, 1, 1, 1))
-void ImageManager::ImageCenterRender(const ML::Vec2& pos, const string& imageName, const ML::Color& color)
-{
-	if (baseImageNum < 0)
-		return;
-
-	ML::Box2D draw(-16, -16, 32, 32);
-	draw.Offset(pos);
-	ML::Box2D src = *charaChip[baseImageNum + int(animCnt)];
-	if (animTurn)
-	{
-		src.x += src.w;
-		src.w *= -1;
-	}
-	DG::Image_Draw(imageName, draw, src, color);
+	DG::Image_Draw(imageName, cdr, src, color);
 }

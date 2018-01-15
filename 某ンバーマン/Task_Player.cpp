@@ -37,13 +37,16 @@ namespace  Player
 
 		MaxBombNum = 10;
 		bombNum = 0;
-		bombPower = 1;
+		bombPower = 2;
+		setSpeed = 1.5f;
 
 		image.ImageCreate32x32(0, 0, 3, 3);
 		image.ImageCreate32x32(0, 3, 6, 1);
+		image.draw = { -16, -26, 32, 32 };
 
+		state = State1;
 		pos = { 48.f, 48.f };
-		hitBase = { -12, -14, 24, 28 };
+		hitBase = { -10, -11, 20, 17 };
 		image.baseImageNum = 6;
 		angleLRUD = Right;
 		
@@ -68,15 +71,26 @@ namespace  Player
 	//「更新」１フレーム毎に行う処理
 	void  Object::UpDate()
 	{
-		MovePlayer();
-		CheckHitMove();
-		Animation();
+		switch (state)
+		{
+		case BChara::State1:
+			MovePlayer();
+			CheckHitMove();
+			Animation();
+			break;
+
+		case BChara::Death:
+			break;
+
+		default:
+			break;
+		}
 	}
 	//-------------------------------------------------------------------
 	//「２Ｄ描画」１フレーム毎に行う処理
 	void  Object::Render2D_AF()
 	{
-		image.ImageCenterRender(pos, res->imageName);
+		image.ImageRender(pos, res->imageName);
 	}
 
 	//-------------------------------------------------------------------
@@ -86,22 +100,22 @@ namespace  Player
 		auto in = DI::GPad_GetState("P1");
 
 		//動作
-		if (in.LStick.L.down) { speed.x = -1; speed.y = 0; }
-		if (in.LStick.R.down) { speed.x =  1; speed.y = 0; }
+		if (in.LStick.L.down) { speed.x = -setSpeed; speed.y = 0; }
+		if (in.LStick.R.down) { speed.x =  setSpeed; speed.y = 0; }
 		if (in.LStick.L.up || in.LStick.R.up)
 		{
 			speed.x = 0;
-			if (in.LStick.U.on) { speed.y = -1; }
-			if (in.LStick.D.on) { speed.y =  1; }
+			if (in.LStick.U.on) { speed.y = -setSpeed; }
+			if (in.LStick.D.on) { speed.y =  setSpeed; }
 		}
 
-		if (in.LStick.U.down) { speed.y = -1; speed.x = 0; }
-		if (in.LStick.D.down) { speed.y =  1; speed.x = 0; }
+		if (in.LStick.U.down) { speed.y = -setSpeed; speed.x = 0; }
+		if (in.LStick.D.down) { speed.y =  setSpeed; speed.x = 0; }
 		if (in.LStick.U.up || in.LStick.D.up)
 		{
 			speed.y = 0;
-			if (in.LStick.L.on) { speed.x = -1; }
-			if (in.LStick.R.on) { speed.x =  1; }
+			if (in.LStick.L.on) { speed.x = -setSpeed; }
+			if (in.LStick.R.on) { speed.x =  setSpeed; }
 		}
 
 		if (speed.x < 0) { angleLRUD = Left; }

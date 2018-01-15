@@ -41,6 +41,7 @@ namespace  Bomb
 		
 		image.ImageCreate32x32(0, 0, 3, 1);
 		image.ImageCreate32x32(0, 1, 7, 4);
+		image.draw = { -16, -16, 32, 32 };
 
 		//šƒ^ƒXƒN‚Ì¶¬
 
@@ -78,7 +79,7 @@ namespace  Bomb
 	//u‚Q‚c•`‰æv‚PƒtƒŒ[ƒ€–ˆ‚És‚¤ˆ—
 	void  Object::Render2D_AF()
 	{
-		image.ImageCenterRender(pos, res->imageName);
+		image.ImageRender(pos, res->imageName);
 	}
 
 	//-------------------------------------------------------------------
@@ -95,9 +96,12 @@ namespace  Bomb
 			image.animCnt = float(noBombTable[(cntTime / 15) % 4]);
 			++cntTime;
 
+			//—U”š
 			if (auto stage = ge->GetTask_One_GN<Stage::Object>("ƒXƒe[ƒW", "“Š‡"))
 			{
-				stage->mapData[bombMapPos.y][bombMapPos.x];
+				if (stage->mapData[bombMapPos.y][bombMapPos.x] == stage->CausingEx)
+					cntTime = 135;
+
 			}
 
 		}
@@ -151,22 +155,29 @@ namespace  Bomb
 
 			*XorY += addOrSub;
 
-			while (stage->mapData[nextMapPos.y][nextMapPos.x] == -1)
+			while (stage->mapData[nextMapPos.y][nextMapPos.x] == stage->Space ||
+				   stage->mapData[nextMapPos.y][nextMapPos.x] == stage->Bomb)
 			{
-				stage->mapData[nextMapPos.y][nextMapPos.x] = -3;
-				auto newbomb = Bomb::Object::Create(true);
-				newbomb->state = Death;
-				newbomb->image.baseImageNum = setBaseImage;
-				newbomb->pos = { float(nextMapPos.x * 32 + 16), float(nextMapPos.y * 32 + 16) };
-				newbomb->bombMapPos = nextMapPos;
-
-				*XorY += addOrSub;
-				--fireLength;
-
-				if (fireLength <= 0)
+				if (stage->mapData[nextMapPos.y][nextMapPos.x] == -1) //•’Ê‚Ì’n–Ê
 				{
-					newbomb->image.baseImageNum = 4 + i;
-					break;
+					stage->mapData[nextMapPos.y][nextMapPos.x] = stage->Explosion;
+					auto newbomb = Bomb::Object::Create(true);
+					newbomb->state = Death;
+					newbomb->image.baseImageNum = setBaseImage;
+					newbomb->pos = { float(nextMapPos.x * 32 + 16), float(nextMapPos.y * 32 + 16) };
+					newbomb->bombMapPos = nextMapPos;
+
+					--fireLength;
+					*XorY += addOrSub;
+					if (fireLength <= 0 || stage->mapData[nextMapPos.y][nextMapPos.x] == stage->Explosion)
+					{
+						newbomb->image.baseImageNum = 4 + i;
+						break;
+					}
+				}
+				else		//”š’e‚ÉÚG
+				{
+					stage->mapData[nextMapPos.y][nextMapPos.x] = stage->CausingEx;
 				}
 			}
 		}
