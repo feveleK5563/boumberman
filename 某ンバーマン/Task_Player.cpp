@@ -35,6 +35,10 @@ namespace  Player
 		//★データ初期化
 		render2D_Priority[1] = 0.3f;
 
+		MaxBombNum = 10;
+		bombNum = 0;
+		bombPower = 1;
+
 		image.ImageCreate32x32(0, 0, 3, 3);
 		image.ImageCreate32x32(0, 3, 6, 1);
 
@@ -107,11 +111,12 @@ namespace  Player
 
 
 		//爆弾出現
-		if (in.B1.down)
+		if (in.B1.down && bombNum < MaxBombNum)
 		{
 			if (auto stage = ge->GetTask_One_GN<Stage::Object>("ステージ", "統括"))
 			{
-				stage->SetBomb(pos);
+				if (stage->SetBomb(pos))
+					++bombNum;
 			}
 		}
 	}
@@ -147,7 +152,7 @@ namespace  Player
 			fabsf(speed.y) > 0.f)
 		{
 			++cntTime;
-			image.animCnt = float(animTable[(cntTime / 5) % 4]);
+			image.animCnt = float(AnimTable[(cntTime / 5) % 4]);
 		}
 	}
 

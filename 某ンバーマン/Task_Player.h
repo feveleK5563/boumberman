@@ -49,7 +49,10 @@ namespace  Player
 	//変更可◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇
 		//追加したい変数・メソッドはここに追加する
 		//BCharaに含まれないモノのみここに追加する
-		const int animTable[4] = { 0, 1, 0, 2 };
+		const int AnimTable[4] = { 0, 1, 0, 2 };
+		int MaxBombNum;
+		int bombNum;
+		int bombPower;
 
 		void MovePlayer();
 		void Animation();

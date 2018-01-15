@@ -51,7 +51,7 @@ namespace  Stage
 		int mapData[MapHeight][MapWidth];
 
 		void StageSet();
-		void SetBomb(const ML::Vec2&);
+		bool SetBomb(const ML::Vec2&);
 		bool MapHitCheck(const ML::Box2D&);
 	};
 }

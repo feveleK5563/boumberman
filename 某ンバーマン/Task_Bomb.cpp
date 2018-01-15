@@ -3,6 +3,8 @@
 //-------------------------------------------------------------------
 #include  "MyPG.h"
 #include  "Task_Bomb.h"
+#include  "Task_Player.h"
+#include  "Task_Stage.h"
 
 namespace  Bomb
 {
@@ -68,6 +70,7 @@ namespace  Bomb
 			break;
 
 		case Death:
+			ActiveBomb();
 			break;
 		}
 	}
@@ -84,13 +87,120 @@ namespace  Bomb
 	{
 		if (cntTime >= 135)
 		{
-			Kill();
+			cntTime = 0;
+			StartBomb();
 		}
 		else
 		{
 			image.animCnt = float(noBombTable[(cntTime / 15) % 4]);
 			++cntTime;
+
+			if (auto stage = ge->GetTask_One_GN<Stage::Object>("ステージ", "統括"))
+			{
+				stage->mapData[bombMapPos.y][bombMapPos.x];
+			}
+
 		}
+	}
+
+	//-------------------------------------------------------------------
+	//爆発の開始
+	void Object::StartBomb()
+	{
+		image.baseImageNum = 3;
+		state = Death;
+
+		auto player = ge->GetTask_One_GN<Player::Object>("本編", "プレイヤー");
+		auto stage = ge->GetTask_One_GN<Stage::Object>("ステージ", "統括");
+		if (player == nullptr || stage == nullptr)
+			Kill();
+
+		stage->mapData[bombMapPos.y][bombMapPos.x] = -3;
+
+		for (int i = 0; i < 4; ++i)
+		{
+			int fireLength = player->bombPower, setBaseImage;
+			POINT nextMapPos = bombMapPos;
+			LONG *XorY, addOrSub;
+			switch (i)
+			{
+			case 0:	//左
+				XorY = &nextMapPos.x;
+				addOrSub = -1;
+				setBaseImage = 8;
+				break;
+
+			case 1: //右
+				XorY = &nextMapPos.x;
+				addOrSub = 1;
+				setBaseImage = 8;
+				break;
+
+			case 2: //上
+				XorY = &nextMapPos.y;
+				addOrSub = -1;
+				setBaseImage = 9;
+				break;
+
+			case 3: //下
+				XorY = &nextMapPos.y;
+				addOrSub = 1;
+				setBaseImage = 9;
+				break;
+			}
+
+			*XorY += addOrSub;
+
+			while (stage->mapData[nextMapPos.y][nextMapPos.x] == -1)
+			{
+				stage->mapData[nextMapPos.y][nextMapPos.x] = -3;
+				auto newbomb = Bomb::Object::Create(true);
+				newbomb->state = Death;
+				newbomb->image.baseImageNum = setBaseImage;
+				newbomb->pos = { float(nextMapPos.x * 32 + 16), float(nextMapPos.y * 32 + 16) };
+				newbomb->bombMapPos = nextMapPos;
+
+				*XorY += addOrSub;
+				--fireLength;
+
+				if (fireLength <= 0)
+				{
+					newbomb->image.baseImageNum = 4 + i;
+					break;
+				}
+			}
+		}
+	}
+
+	//-------------------------------------------------------------------
+	//爆発中の更新
+	void Object::ActiveBomb()
+	{
+		if (cntTime >= 28)
+		{
+			DeleteBomb();
+		}
+		else
+		{
+			image.animCnt = float(acBombTable[(cntTime / 4) % 7]);
+			++cntTime;
+		}
+	}
+
+	//-------------------------------------------------------------------
+	//爆弾の消滅
+	void Object::DeleteBomb()
+	{
+		if (image.baseImageNum == 3)
+		{
+			if (auto player = ge->GetTask_One_GN<Player::Object>("本編", "プレイヤー"))
+				--player->bombNum;
+		}
+
+		if (auto stage = ge->GetTask_One_GN<Stage::Object>("ステージ", "統括"))
+			stage->mapData[bombMapPos.y][bombMapPos.x] = -1;
+
+		Kill();
 	}
 
 	//★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★

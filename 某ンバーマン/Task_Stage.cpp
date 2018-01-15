@@ -95,7 +95,7 @@ namespace  Stage
 
 	//-------------------------------------------------------------------
 	//”š’e‚ğİ’u
-	void Object::SetBomb(const ML::Vec2& plyPos)
+	bool Object::SetBomb(const ML::Vec2& plyPos)
 	{
 		POINT bmp = {
 			int(plyPos.x / 32),
@@ -108,6 +108,12 @@ namespace  Stage
 			auto bm = Bomb::Object::Create(true);
 			bm->bombMapPos = bmp;
 			bm->pos = { float(bmp.x * 32 + 16), float(bmp.y * 32 + 16) };
+
+			return true;
+		}
+		else
+		{
+			return false;
 		}
 	}
 
