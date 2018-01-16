@@ -5,6 +5,7 @@
 #include  "Task_Stage.h"
 #include  "Task_Block.h"
 #include  "Task_Bomb.h"
+#include  "Task_Player.h"
 
 namespace  Stage
 {
@@ -68,15 +69,15 @@ namespace  Stage
 	{
 		//マップデータ読み込み(仮)
 		int mpd[MapHeight][MapWidth] = {
-		{ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
-		{ 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0 },
-		{ 0, -1,  0, -1,  0, -1,  0, -1,  0, -1,  0, -1,  0, -1,  0 },
-		{ 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0 },
-		{ 0, -1,  0, -1,  0, -1,  0, -1,  0, -1,  0, -1,  0, -1,  0 },
-		{ 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0 },
-		{ 0, -1,  0, -1,  0, -1,  0, -1,  0, -1,  0, -1,  0, -1,  0 },
-		{ 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0 },
-		{ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+			{ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+			{ 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0 },
+			{ 0, -1,  0, -1,  0, -1,  0, -1,  0, -1,  0, -1,  0, -1,  0 },
+			{ 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0 },
+			{ 0, -1,  0, -1,  0, -1,  0, -1,  0, -1,  0, -1,  0, -1,  0 },
+			{ 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0 },
+			{ 0, -1,  0, -1,  0, -1,  0, -1,  0, -1,  0, -1,  0, -1,  0 },
+			{ 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0 },
+			{ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
 		};
 
 		//上記のマップデータを元にブロックを作成
@@ -87,9 +88,40 @@ namespace  Stage
 				mapData[y][x] = mpd[y][x];
 				auto block = Block::Object::Create(true);
 				block->pos = ML::Vec2(float(x * 32), float(y * 32));
+				block->mapPos.x = x;
+				block->mapPos.y = y;
+
+				BreakBlockSet(x, y);
+
 				block->blockNum = mapData[y][x];
 				block->image.baseImageNum = block->blockNum;
 			}
+		}
+	}
+
+	//-------------------------------------------------------------------
+	//破壊可能なブロックを配置する
+	void Object::BreakBlockSet(const int x, const int y)
+	{
+		auto player = ge->GetTask_Group_GN<Player::Object>("本編", "プレイヤー");
+		if (player == nullptr)
+			return;
+
+		//配置不可エリアを除外する
+		if (mapData[y][x] != -1)
+		{
+			return;
+		}
+		for (auto it = player->begin(); it != player->end(); ++it)
+		{
+			if ((*it)->mapPos.x - 1 <= x && x <= (*it)->mapPos.x + 1 &&
+				(*it)->mapPos.y - 1 <= y && y <= (*it)->mapPos.y + 1)
+				return;
+		}
+
+		if (rand() % 3)
+		{
+			mapData[y][x] = BreakBlock;
 		}
 	}
 
@@ -106,7 +138,7 @@ namespace  Stage
 		{
 			mapData[bmp.y][bmp.x] = -2;
 			auto bm = Bomb::Object::Create(true);
-			bm->bombMapPos = bmp;
+			bm->mapPos = bmp;
 			bm->pos = { float(bmp.x * 32 + 16), float(bmp.y * 32 + 16) };
 
 			return true;
@@ -142,11 +174,11 @@ namespace  Stage
 		{
 			for (int x = sx; x <= ex; ++x)
 			{
-				if (mapData[y][x] == 0)
+				if (mapData[y][x] == NoBreakBlock ||
+					mapData[y][x] == BreakBlock)
 					return true;
 			}
 		}
-
 		return false;
 	}
 

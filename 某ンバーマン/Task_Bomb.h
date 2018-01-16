@@ -52,7 +52,6 @@ namespace  Bomb
 		const int noBombTable[4] = { 2, 0, 1, 0 };
 		const int acBombTable[7] = { 0, 7, 14, 21, 14, 7, 0 };
 
-		POINT bombMapPos;
 		void NoBomb();
 		void StartBomb();
 		void ActiveBomb();

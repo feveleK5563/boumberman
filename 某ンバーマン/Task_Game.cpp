@@ -34,10 +34,18 @@ namespace  Game
 		this->res = Resource::Create();
 
 		//★データ初期化
+		srand((unsigned int)time(NULL));
+
 		//背景タスク
 		auto bg = GameBG::Object::Create(true);
 		//プレイヤータスク
-		auto pl = Player::Object::Create(true);
+		for (int i = 1; i <= 2; ++i)
+		{
+			auto pl = Player::Object::Create(true);
+			pl->playerNum = i;
+			pl->mapPos = { 1 + (12 * (i - 1)), 1 + (6 * (i - 1)) };
+			pl->pos = { float(pl->mapPos.x * 32 + 16), float(pl->mapPos.y * 32 + 16) };
+		}
 		//ステージタスク
 		auto sg = Stage::Object::Create(true);
 		

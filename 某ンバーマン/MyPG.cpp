@@ -79,6 +79,7 @@ namespace MyPG
 			{ DI::GPB::B11, DI::But::L3 },{ DI::GPB::B12, DI::But::R3 },
 		};
 		DI::GPad_CreateKBGP("P1", ls, rs, key, 0, but);
+		DI::GPad_CreateKBGP("P2", ls, rs, key, 1, but);
 
 
 		//背景色の設定（デフォルト）

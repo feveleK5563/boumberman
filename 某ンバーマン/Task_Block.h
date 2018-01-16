@@ -50,5 +50,7 @@ namespace  Block
 		//追加したい変数・メソッドはここに追加する
 		//BCharaに含まれないモノのみここに追加する
 		int blockNum;
+
+		void HitBomb();
 	};
 }

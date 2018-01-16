@@ -28,6 +28,7 @@ public:
 	State state;
 
 	//キャラクターの動作
+	POINT		mapPos;		//マップ上の座標
 	ML::Vec2	pos;		//キャラクターの座標
 	ML::Vec2	speed;		//キャラクターのスピード
 	ML::Box2D	hitBase;	//当たり判定範囲
@@ -47,7 +48,11 @@ public:
 		hitBase(0, 0, 0, 0),
 		angleLRUD(Left),
 		image(ImageManager::ImageManager()),
-		cntTime(0){}
+		cntTime(0)
+	{
+		mapPos.x = 0;
+		mapPos.y = 0;
+	}
 
 	virtual ~BChara(){}
 

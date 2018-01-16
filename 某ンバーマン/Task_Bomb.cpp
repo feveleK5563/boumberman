@@ -36,12 +36,13 @@ namespace  Bomb
 		//★データ初期化
 		render2D_Priority[1] = 0.5f;
 
-		bombMapPos = { 0, 0 };
 		state = State1;
+		hitBase = { -16, -16, 32, 32 };
 		
 		image.ImageCreate32x32(0, 0, 3, 1);
 		image.ImageCreate32x32(0, 1, 7, 4);
-		image.draw = { -16, -16, 32, 32 };
+		image.drawPos.x = 16;
+		image.drawPos.y = 16;
 
 		//★タスクの生成
 
@@ -99,7 +100,7 @@ namespace  Bomb
 			//誘爆
 			if (auto stage = ge->GetTask_One_GN<Stage::Object>("ステージ", "統括"))
 			{
-				if (stage->mapData[bombMapPos.y][bombMapPos.x] == stage->CausingEx)
+				if (stage->mapData[mapPos.y][mapPos.x] == stage->Causing)
 					cntTime = 135;
 
 			}
@@ -108,7 +109,7 @@ namespace  Bomb
 	}
 
 	//-------------------------------------------------------------------
-	//爆発の開始
+	//爆発時の初期化
 	void Object::StartBomb()
 	{
 		image.baseImageNum = 3;
@@ -119,12 +120,12 @@ namespace  Bomb
 		if (player == nullptr || stage == nullptr)
 			Kill();
 
-		stage->mapData[bombMapPos.y][bombMapPos.x] = -3;
+		stage->mapData[mapPos.y][mapPos.x] = -3;
 
 		for (int i = 0; i < 4; ++i)
 		{
 			int fireLength = player->bombPower, setBaseImage;
-			POINT nextMapPos = bombMapPos;
+			POINT nextMapPos = mapPos;
 			LONG *XorY, addOrSub;
 			switch (i)
 			{
@@ -156,6 +157,7 @@ namespace  Bomb
 			*XorY += addOrSub;
 
 			while (stage->mapData[nextMapPos.y][nextMapPos.x] == stage->Space ||
+				   stage->mapData[nextMapPos.y][nextMapPos.x] == stage->BreakBlock ||
 				   stage->mapData[nextMapPos.y][nextMapPos.x] == stage->Bomb)
 			{
 				if (stage->mapData[nextMapPos.y][nextMapPos.x] == -1) //普通の地面
@@ -165,7 +167,7 @@ namespace  Bomb
 					newbomb->state = Death;
 					newbomb->image.baseImageNum = setBaseImage;
 					newbomb->pos = { float(nextMapPos.x * 32 + 16), float(nextMapPos.y * 32 + 16) };
-					newbomb->bombMapPos = nextMapPos;
+					newbomb->mapPos = nextMapPos;
 
 					--fireLength;
 					*XorY += addOrSub;
@@ -175,9 +177,9 @@ namespace  Bomb
 						break;
 					}
 				}
-				else		//爆弾に接触
+				else		//壁・爆弾に接触
 				{
-					stage->mapData[nextMapPos.y][nextMapPos.x] = stage->CausingEx;
+					stage->mapData[nextMapPos.y][nextMapPos.x] = stage->Causing;
 				}
 			}
 		}
@@ -209,7 +211,7 @@ namespace  Bomb
 		}
 
 		if (auto stage = ge->GetTask_One_GN<Stage::Object>("ステージ", "統括"))
-			stage->mapData[bombMapPos.y][bombMapPos.x] = -1;
+			stage->mapData[mapPos.y][mapPos.x] = -1;
 
 		Kill();
 	}

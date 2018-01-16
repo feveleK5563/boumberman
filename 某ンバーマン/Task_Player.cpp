@@ -42,13 +42,15 @@ namespace  Player
 
 		image.ImageCreate32x32(0, 0, 3, 3);
 		image.ImageCreate32x32(0, 3, 6, 1);
-		image.draw = { -16, -26, 32, 32 };
+		image.ImageCreate32x32(0, 4, 3, 3);
+		image.ImageCreate32x32(0, 7, 6, 1);
+		image.drawPos.x = 16;
+		image.drawPos.y = 24;
 
 		state = State1;
-		pos = { 48.f, 48.f };
 		hitBase = { -10, -11, 20, 17 };
 		image.baseImageNum = 6;
-		angleLRUD = Right;
+		angleLRUD = Down;
 		
 		//★タスクの生成
 
@@ -71,20 +73,26 @@ namespace  Player
 	//「更新」１フレーム毎に行う処理
 	void  Object::UpDate()
 	{
+		image.defImageNum = (playerNum - 1) * 15;
 		switch (state)
 		{
 		case BChara::State1:
 			MovePlayer();
 			CheckHitMove();
-			Animation();
+			NomalAnimation();
+			HitBombOREnemy();
 			break;
 
 		case BChara::Death:
+			DeathAnimation();
 			break;
 
 		default:
 			break;
 		}
+
+		mapPos.x = int(pos.x / 32);
+		mapPos.y = int(pos.y / 32);
 	}
 	//-------------------------------------------------------------------
 	//「２Ｄ描画」１フレーム毎に行う処理
@@ -94,38 +102,57 @@ namespace  Player
 	}
 
 	//-------------------------------------------------------------------
+	//コントロールテーブル
+	int Object::InputBTable(DI::VGamePad in)
+	{
+		int table[3][3] = {
+			{ 2,  2,  2},
+			{ 0, -1,  1},
+			{ 3,  3,  3}
+		};
+		int tableX = 1, tableY = 1;
+
+		if (in.LStick.L.on) { --tableX; }
+		if (in.LStick.R.on) { ++tableX; }
+		if (in.LStick.U.on) { --tableY; }
+		if (in.LStick.D.on) { ++tableY; }
+
+		return table[tableY][tableX];
+	}
+
+	//-------------------------------------------------------------------
 	//ボタン入力に応じて行う処理
 	void Object::MovePlayer()
 	{
-		auto in = DI::GPad_GetState("P1");
+		auto in = DI::GPad_GetState("P" + to_string(playerNum));
 
 		//動作
-		if (in.LStick.L.down) { speed.x = -setSpeed; speed.y = 0; }
-		if (in.LStick.R.down) { speed.x =  setSpeed; speed.y = 0; }
-		if (in.LStick.L.up || in.LStick.R.up)
+		speed = { 0.f, 0.f };
+		switch (InputBTable(in))
 		{
-			speed.x = 0;
-			if (in.LStick.U.on) { speed.y = -setSpeed; }
-			if (in.LStick.D.on) { speed.y =  setSpeed; }
+		case 0:	//L
+			speed.x = -1;
+			angleLRUD = Left;
+			break;
+
+		case 1: //R
+			speed.x = 1;
+			angleLRUD = Right;
+			break;
+
+		case 2: //U
+			speed.y = -1;
+			angleLRUD = Up;
+			break;
+
+		case 3: //D
+			speed.y = 1;
+			angleLRUD = Down;
+			break;
 		}
-
-		if (in.LStick.U.down) { speed.y = -setSpeed; speed.x = 0; }
-		if (in.LStick.D.down) { speed.y =  setSpeed; speed.x = 0; }
-		if (in.LStick.U.up || in.LStick.D.up)
-		{
-			speed.y = 0;
-			if (in.LStick.L.on) { speed.x = -setSpeed; }
-			if (in.LStick.R.on) { speed.x =  setSpeed; }
-		}
-
-		if (speed.x < 0) { angleLRUD = Left; }
-		if (speed.x > 0) { angleLRUD = Right; }
-		if (speed.y < 0) { angleLRUD = Up; }
-		if (speed.y > 0) { angleLRUD = Down; }
-
 
 		//爆弾出現
-		if (in.B1.down && bombNum < MaxBombNum)
+		if (in.B3.down && bombNum < MaxBombNum)
 		{
 			if (auto stage = ge->GetTask_One_GN<Stage::Object>("ステージ", "統括"))
 			{
@@ -136,8 +163,26 @@ namespace  Player
 	}
 
 	//-------------------------------------------------------------------
-	//アニメーション
-	void Object::Animation()
+	//爆弾・敵との当たり判定
+	void Object::HitBombOREnemy()
+	{
+		auto stage = ge->GetTask_One_GN<Stage::Object>("ステージ", "統括");
+		if (stage == nullptr)
+			return;
+
+		if (stage->mapData[mapPos.y][mapPos.x] == stage->Explosion)
+		{
+			state = Death;
+			image.baseImageNum = 9;
+			image.animCnt = 0;
+			image.animTurn = false;
+			cntTime = 0;
+		}
+	}
+
+	//-------------------------------------------------------------------
+	//通常時のアニメーション
+	void Object::NomalAnimation()
 	{
 		switch (angleLRUD)
 		{
@@ -168,6 +213,20 @@ namespace  Player
 			++cntTime;
 			image.animCnt = float(AnimTable[(cntTime / 5) % 4]);
 		}
+	}
+
+	//-------------------------------------------------------------------
+	//死亡時のアニメーション
+	void Object::DeathAnimation()
+	{
+		if (cntTime > 60)
+		{
+			image.animCnt = float((cntTime - 55) / 5 % 6);
+
+			if (!image.animCnt)
+				Kill();
+		}
+		++cntTime;
 	}
 
 	//★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★

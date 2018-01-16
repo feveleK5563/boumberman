@@ -47,12 +47,12 @@ namespace  Stage
 	public:
 		//追加したい変数・メソッドはここに追加する
 		enum BlockName {
-			CausingEx = -4,
+			Causing = -4,
 			Explosion = -3,
 			Bomb = -2,
 			Space = -1,
 			NoBreakBlock = 0,
-			BreakBlock = 1,
+			BreakBlock = 7,
 		};
 
 		static const int MapWidth = 15;
@@ -60,6 +60,7 @@ namespace  Stage
 		int mapData[MapHeight][MapWidth];
 
 		void StageSet();
+		void BreakBlockSet(const int, const int);
 		bool SetBomb(const ML::Vec2&);
 		bool MapHitCheck(const ML::Box2D&);
 	};

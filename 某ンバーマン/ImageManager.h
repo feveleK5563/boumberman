@@ -7,16 +7,21 @@ class ImageManager
 public:
 
 	vector<ML::Box2D*>	charaChip;		//キャラクタの素材
+	int					defImageNum;	//差分用画像番号
 	int					baseImageNum;	//基準画像番号
-	ML::Box2D			draw;
+	POINT				drawPos;		//描画の基準座標
 	float				animCnt;		//アニメーションカウンタ
 	bool				animTurn;		//アニメーションが反転しているか否か
 
 	ImageManager() :
+		defImageNum(0),
 		baseImageNum(0),
-		draw(0, 0, 32, 32),
 		animCnt(0),
-		animTurn(false) {};
+		animTurn(false)
+	{
+		drawPos.x = 0;
+		drawPos.y = 0;
+	};
 
 	~ImageManager() {};
 

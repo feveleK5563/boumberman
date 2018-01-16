@@ -32,13 +32,13 @@ void ImageManager::ImageRender(const ML::Vec2& pos, const string& imageName, con
 {
 	if (baseImageNum < 0)
 		return;
-	ML::Box2D cdr = draw;
-	cdr.Offset(pos);
-	ML::Box2D src = *charaChip[baseImageNum + int(animCnt)];
+	ML::Box2D draw = { -drawPos.x, -drawPos.y, 32, 32 };
+	draw.Offset(pos);
+	ML::Box2D src = *charaChip[defImageNum + baseImageNum + int(animCnt)];
 	if (animTurn)
 	{
 		src.x += src.w;
 		src.w *= -1;
 	}
-	DG::Image_Draw(imageName, cdr, src, color);
+	DG::Image_Draw(imageName, draw, src, color);
 }

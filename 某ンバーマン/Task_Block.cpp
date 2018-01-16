@@ -4,6 +4,7 @@
 #include  "MyPG.h"
 #include  "Task_Block.h"
 #include  "Task_Player.h"
+#include  "Task_Stage.h"
 
 namespace  Block
 {
@@ -58,12 +59,42 @@ namespace  Block
 	//「更新」１フレーム毎に行う処理
 	void  Object::UpDate()
 	{
+		switch (blockNum)
+		{
+		case 7:
+			HitBomb();
+			break;
+		}
 	}
 	//-------------------------------------------------------------------
 	//「２Ｄ描画」１フレーム毎に行う処理
 	void  Object::Render2D_AF()
 	{
 		image.ImageRender(pos, res->imageName);
+	}
+
+	//-------------------------------------------------------------------
+	//爆弾に当たったか否かの判定と、当たった時の更新
+	void Object::HitBomb()
+	{
+		auto stage = ge->GetTask_One_GN<Stage::Object>("ステージ", "統括");
+		if (stage == nullptr)
+			return;
+
+		//爆弾に当たっている時
+		if (stage->mapData[mapPos.y][mapPos.x] == stage->Causing)
+		{
+			if (cntTime >= 30)
+			{
+				stage->mapData[mapPos.y][mapPos.x] = -1;
+				Kill();
+			}
+			else
+			{
+				image.animCnt = float((cntTime / 5) % 6 + 1);
+				++cntTime;
+			}
+		}
 	}
 
 	//★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★

@@ -54,8 +54,12 @@ namespace  Player
 		int bombNum;
 		int bombPower;
 		float setSpeed;
+		int playerNum;
 
+		int InputBTable(DI::VGamePad);
 		void MovePlayer();
-		void Animation();
+		void NomalAnimation();
+		void HitBombOREnemy();
+		void DeathAnimation();
 	};
 }
