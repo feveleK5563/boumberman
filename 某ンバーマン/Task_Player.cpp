@@ -131,28 +131,28 @@ namespace  Player
 		switch (InputBTable(in))
 		{
 		case 0:	//L
-			speed.x = -1;
+			speed.x = -1.5f;
 			angleLRUD = Left;
 			break;
 
 		case 1: //R
-			speed.x = 1;
+			speed.x = 1.5f;
 			angleLRUD = Right;
 			break;
 
 		case 2: //U
-			speed.y = -1;
+			speed.y = -1.5f;
 			angleLRUD = Up;
 			break;
 
 		case 3: //D
-			speed.y = 1;
+			speed.y = 1.5f;
 			angleLRUD = Down;
 			break;
 		}
 
 		//爆弾出現
-		if (in.B3.down && bombNum < MaxBombNum)
+		if (in.B1.down && bombNum < MaxBombNum)
 		{
 			if (auto stage = ge->GetTask_One_GN<Stage::Object>("ステージ", "統括"))
 			{
