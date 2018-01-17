@@ -102,7 +102,6 @@ namespace  Bomb
 			{
 				if (stage->mapData[mapPos.y][mapPos.x] == stage->Causing)
 					cntTime = 135;
-
 			}
 
 		}
@@ -206,8 +205,12 @@ namespace  Bomb
 	{
 		if (image.baseImageNum == 3)
 		{
-			if (auto player = ge->GetTask_One_GN<Player::Object>("本編", "プレイヤー"))
-				--player->bombNum;
+			if (auto player = ge->GetTask_Group_GN<Player::Object>("本編", "プレイヤー"))
+			{
+				auto it = player->begin();
+				it += (playerNum - 1);
+				--(*it)->bombNum;
+			}
 		}
 
 		if (auto stage = ge->GetTask_One_GN<Stage::Object>("ステージ", "統括"))

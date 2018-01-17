@@ -61,7 +61,7 @@ namespace  Stage
 
 		void StageSet();
 		void BreakBlockSet(const int, const int);
-		bool SetBomb(const ML::Vec2&);
+		bool SetBomb(const ML::Vec2&, const int);
 		bool MapHitCheck(const ML::Box2D&);
 	};
 }

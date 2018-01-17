@@ -51,6 +51,7 @@ namespace  Bomb
 		//BChara‚ÉŠÜ‚Ü‚ê‚È‚¢ƒ‚ƒm‚Ì‚Ý‚±‚±‚É’Ç‰Á‚·‚é
 		const int noBombTable[4] = { 2, 0, 1, 0 };
 		const int acBombTable[7] = { 0, 7, 14, 21, 14, 7, 0 };
+		int	playerNum;
 
 		void NoBomb();
 		void StartBomb();

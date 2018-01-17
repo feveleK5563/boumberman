@@ -39,7 +39,7 @@ namespace  Game
 		//背景タスク
 		auto bg = GameBG::Object::Create(true);
 		//プレイヤータスク
-		for (int i = 1; i <= 1; ++i)
+		for (int i = 1; i <= 2; ++i)
 		{
 			auto pl = Player::Object::Create(true);
 			pl->playerNum = i;

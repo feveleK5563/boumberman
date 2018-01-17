@@ -156,7 +156,7 @@ namespace  Player
 		{
 			if (auto stage = ge->GetTask_One_GN<Stage::Object>("ステージ", "統括"))
 			{
-				if (stage->SetBomb(pos))
+				if (stage->SetBomb(pos, playerNum))
 					++bombNum;
 			}
 		}
