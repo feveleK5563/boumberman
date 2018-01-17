@@ -88,7 +88,7 @@ namespace  Player
 			break;
 
 		default:
-			break;
+			return;
 		}
 
 		mapPos.x = int(pos.x / 32);
@@ -98,7 +98,8 @@ namespace  Player
 	//u‚Q‚c•`‰æv‚PƒtƒŒ[ƒ€–ˆ‚És‚¤ˆ—
 	void  Object::Render2D_AF()
 	{
-		image.ImageRender(pos, res->imageName);
+		if (state != Non)
+			image.ImageRender(pos, res->imageName);
 	}
 
 	//-------------------------------------------------------------------
@@ -224,7 +225,7 @@ namespace  Player
 			image.animCnt = float((cntTime - 55) / 5 % 6);
 
 			if (!image.animCnt)
-				Kill();
+				state = Non;
 		}
 		++cntTime;
 	}
